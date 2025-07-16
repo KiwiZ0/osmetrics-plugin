@@ -14,7 +14,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 
 @Slf4j
 @PluginDescriptor(
-	name = "Example"
+	name = "OSMetrics"
 )
 public class OSMetrics extends Plugin
 {
@@ -27,13 +27,13 @@ public class OSMetrics extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
-		log.info("Example started!");
+		log.info("OSMetrics started!");
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
-		log.info("Example stopped!");
+		log.info("OSMetrics stopped!");
 	}
 
 	@Subscribe
