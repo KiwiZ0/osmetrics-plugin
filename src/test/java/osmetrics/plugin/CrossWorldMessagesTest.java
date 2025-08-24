@@ -1,4 +1,4 @@
-package fking.work.chatlogger;
+package osmetrics.plugin;
 
 import net.runelite.api.Client;
 import org.junit.jupiter.api.Assertions;

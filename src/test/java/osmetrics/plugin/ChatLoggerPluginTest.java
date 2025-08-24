@@ -1,4 +1,4 @@
-package fking.work.chatlogger;
+package osmetrics.plugin;
 
 import net.runelite.client.RuneLite;
 import net.runelite.client.externalplugins.ExternalPluginManager;

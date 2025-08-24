@@ -1,4 +1,4 @@
-package fking.work.chatlogger;
+package osmetrics.plugin;
 
 import lombok.experimental.UtilityClass;
 import net.runelite.api.Client;

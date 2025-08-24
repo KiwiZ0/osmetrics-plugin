@@ -29,7 +29,7 @@ test {
     useJUnitPlatform()
 }
 
-group = 'fking.work.chatlogger'
+group = 'osmetrics.plugin'
 version = '1.8.1'
 sourceCompatibility = '1.8'
 

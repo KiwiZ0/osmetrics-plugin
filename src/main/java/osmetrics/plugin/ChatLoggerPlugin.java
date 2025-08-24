@@ -1,4 +1,4 @@
-package fking.work.chatlogger;
+package osmetrics.plugin;
 
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +11,6 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
-import fking.work.chatlogger.ChatEntry.ChatType;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.clan.ClanChannel;
@@ -27,7 +26,7 @@ import net.runelite.client.util.Text;
 import okhttp3.OkHttpClient;
 
 @Slf4j
-@PluginDescriptor(name = "Chat Logger", description = "Logs chat messages to a file")
+@PluginDescriptor(name = "OSMetrics", description = "Captures game events for analysis")
 public class ChatLoggerPlugin extends Plugin {
 
     private static final String BASE_DIRECTORY = RuneLite.RUNELITE_DIR + "/chatlogs/";
@@ -169,11 +168,15 @@ public class ChatLoggerPlugin extends Plugin {
 
     @Subscribe
     public void onChatMessage(ChatMessage event) {
+        ChatMessageType chatType = event.getType();
+        String name = Text.sanitize(event.getName());
+        String sender = Text.sanitize(event.getSender());
         switch (event.getType()) {
             case CLAN_GIM_CHAT:
             case CLAN_GIM_MESSAGE:
             case CLAN_GIM_FORM_GROUP:
             case CLAN_GIM_GROUP_WITH:
+                System.out.println("Received a GIM chat message: " + event.getMessage() + "eventGetName:" + event.getName() + "eventGetSender:" + event.getSender() + "eventGetType:" + event.getType());
                 if (config.logGroupChat()) {
                     if (event.getType() == ChatMessageType.CLAN_GIM_MESSAGE) {
                         groupChatLogger.info("{}", event.getMessage());
@@ -183,7 +186,8 @@ public class ChatLoggerPlugin extends Plugin {
                 }
                 
                 if (config.remoteSubmitLogGroupChat() && remoteSubmitter != null) {
-                    submitToRemote("groupiron", event, CHANNEL_UNRANKED);
+
+                    submitToRemote(chatType, sender, name, event, CHANNEL_UNRANKED);
                 }
 
             case FRIENDSCHAT:
@@ -198,7 +202,11 @@ public class ChatLoggerPlugin extends Plugin {
                         return;
                     }
                     String owner = friendsChatManager.getOwner();
-                    submitToRemote(owner, event, friendsChatMemberRank(event.getName()));
+                    System.out.println("friendsChatManager.getOwner(): " + owner +
+                            "event.getSender(): " + event.getSender() +
+                            "event.getName(): " + event.getName() +
+                            "friendsChatMemberRank(event.getName()): " + friendsChatMemberRank(event.getName()));
+                    submitToRemote(chatType, owner, name, event, friendsChatMemberRank(event.getName()));
                 }
                 break;
 
@@ -226,7 +234,7 @@ public class ChatLoggerPlugin extends Plugin {
                         return;
                     }
                     String chatName = clanChannel.getName();
-                    submitToRemote(chatName, event, clanChannelMemberRank(event.getName(), chatName));
+                    submitToRemote(chatType, chatName, name, event, clanChannelMemberRank(event.getName(), chatName));
                 }
                 break;
             case PRIVATECHAT:
@@ -246,9 +254,9 @@ public class ChatLoggerPlugin extends Plugin {
         }
     }
 
-    private void submitToRemote(String channelName, ChatMessage event, int rank) {
+    private void submitToRemote(ChatMessageType chatType, String channelName, String sender, ChatMessage event, int rank) {
         long messageId = CrossWorldMessages.latestId(client);
-        remoteSubmitter.queue(ChatEntry.from(messageId, ChatType.CLAN, channelName, rank, event));
+        remoteSubmitter.queue(ChatEntry.from(messageId, chatType, channelName, sender, rank, event));
     }
 
     private Logger setupLogger(String loggerName, String subFolder) {

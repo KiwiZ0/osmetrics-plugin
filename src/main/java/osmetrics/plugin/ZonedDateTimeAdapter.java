@@ -1,4 +1,4 @@
-package fking.work.chatlogger;
+package osmetrics.plugin;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;

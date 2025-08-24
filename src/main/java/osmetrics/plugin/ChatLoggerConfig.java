@@ -1,16 +1,16 @@
-package fking.work.chatlogger;
+package osmetrics.plugin;
 
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
 
-import static fking.work.chatlogger.ChatLoggerConfig.*;
+import static osmetrics.plugin.ChatLoggerConfig.*;
 
 @ConfigGroup(GROUP_NAME)
 public interface ChatLoggerConfig extends Config {
 
-    String GROUP_NAME = "chatlogger";
+    String GROUP_NAME = "osmetrics";
 
     @ConfigSection(
         name = "Channel Select", 
